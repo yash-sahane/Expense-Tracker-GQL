@@ -1,5 +1,16 @@
+import { users } from "../../DummyData/index.js";
+
 const userResolvers = {
-  Query: {},
+  Query: {
+    users: () => {
+      return users;
+    },
+    user: (parent: any, arg: { userId: String }) => {
+      const filteredUsers = users.find((user) => user._id === arg.userId);
+      console.log(filteredUsers);
+      return filteredUsers;
+    },
+  },
 };
 
 export default userResolvers;

@@ -9,6 +9,7 @@ const port = Number(process.env.PORT);
 connectDB();
 const server = connectGraphQL();
 await server.start();
+app.use(express.json());
 app.use("/graphql", expressMiddleware(server));
 app.listen(port, () => {
     console.log("Server is listening on port", port);

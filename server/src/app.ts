@@ -15,6 +15,7 @@ connectDB();
 const server = connectGraphQL();
 await server.start();
 
+app.use(express.json());
 app.use("/graphql", expressMiddleware(server) as any);
 
 app.listen(port, () => {
