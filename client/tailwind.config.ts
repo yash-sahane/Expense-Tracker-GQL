@@ -1,13 +1,17 @@
-import svgToDataUri from "mini-svg-data-uri";
+/** @type {import('tailwindcss').Config} */
 
+import svgToDataUri from "mini-svg-data-uri";
+import tailwindAnimate from "tailwindcss-animate";
 import colors from "tailwindcss/colors";
 import { default as flattenColorPalette } from "tailwindcss/lib/util/flattenColorPalette";
 
-/** @type {import('tailwindcss').Config} */
 export const darkMode = ["class"];
 export const content = ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"];
 export const theme = {
   extend: {
+    boxShadow: {
+      input: `0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08)`,
+    },
     borderRadius: {
       lg: "var(--radius)",
       md: "calc(var(--radius) - 2px)",
@@ -58,7 +62,7 @@ export const theme = {
   },
 };
 export const plugins = [
-  require("tailwindcss-animate"),
+  tailwindAnimate,
   addVariablesForColors,
   function ({ matchUtilities, theme }: any) {
     matchUtilities(
