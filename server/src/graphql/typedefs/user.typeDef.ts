@@ -1,21 +1,19 @@
 const userTypeDef = `#graphql
   type User {
-    _id : ID!
+    uid : ID!
     fullName : String!
-    userName : String!
-    password : String!
-    gender : String!
+    email : String!
+    avatar : String!
   }
 
-  input SignupData {
+  input SignupInput {
     fullName : String!
-    userName : String!
-    gender : String!
-    password : String!
+    email : String!
+    avatar : String!
   }
 
-  input LoginData {
-    userName : String!
+  input LoginInput {
+    email : String!
     password : String!
   }
 
@@ -32,8 +30,9 @@ const userTypeDef = `#graphql
   }
 
   type Mutation{
-    signup(data : SignupData) : Response
-    login(data : LoginData) : Response
+    crateUser(data : SignupInput) : Response
+    signup(data : SignupInput) : Response
+    login(data : LoginInput) : Response
     logout : Response
   }
 `;

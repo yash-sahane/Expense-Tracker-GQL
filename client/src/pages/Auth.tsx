@@ -14,6 +14,8 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebase";
 
 const loginSchema = z.object({
   email: z.string().min(6, {
@@ -58,15 +60,24 @@ export function Auth() {
     },
   });
 
-  function onLoginSubmit(data: z.infer<typeof loginSchema>) {
-    // toast({
-    //   title: "You submitted the following values:",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // });
+  async function onLoginSubmit(data: z.infer<typeof loginSchema>) {
+    console.log("working");
+
+    try {
+      const { email, password } = data;
+      const result = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const token = await result.user.getIdToken();
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_SERVER_URI}/graphql/`
+      );
+    } catch (e: any) {
+      console.log(e.message);
+    }
   }
   function onSignupSubmit(data: z.infer<typeof signupSchema>) {
     // toast({
@@ -90,7 +101,7 @@ export function Auth() {
           <TabsTrigger value="signup">Signup</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
-          <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-6 shadow-input bg-white dark:bg-black">
+          <div className="max-w-md max-h-[75vh] overflow-auto w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-6 shadow-input bg-white dark:bg-black">
             {/* <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
             Login
           </h2> */}
@@ -164,7 +175,7 @@ export function Auth() {
           </div>
         </TabsContent>
         <TabsContent value="signup">
-          <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-6 shadow-input bg-white dark:bg-black">
+          <div className="max-w-md max-h-[75vh] overflow-auto w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-6 shadow-input bg-white dark:bg-black">
             <Form {...signupForm}>
               <form
                 className="mt-0"
