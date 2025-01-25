@@ -1,4 +1,4 @@
-import { users } from "../../DummyData/index.js";
+import { createUser } from "../../controllers/users.js";
 import ErrorHandler from "../../middlewares/error.js";
 
 const userResolvers = {
@@ -14,12 +14,7 @@ const userResolvers = {
   },
 
   Mutation: {
-    createUser: (_, { data }, { req, res, next }) => {
-      const token = req.headers.authorization || "";
-      if (!token) {
-        return next(new ErrorHandler(401, "Please login to access this route"));
-      }
-    },
+    createUser: createUser,
   },
 };
 

@@ -1,7 +1,7 @@
 const transactionTypeDef = `#graphql
   type Transaction {
     _id : ID!
-    userId : ID!
+    uid : ID!
     description : String!
     paymentType : String!
     category : String!

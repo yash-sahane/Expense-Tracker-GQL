@@ -30,7 +30,7 @@ const userTypeDef = `#graphql
   }
 
   type Mutation{
-    crateUser(data : SignupInput) : Response
+    createUser(data : SignupInput) : Response
     signup(data : SignupInput) : Response
     login(data : LoginInput) : Response
     logout : Response
