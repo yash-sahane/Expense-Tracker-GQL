@@ -6,15 +6,15 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAdtS_QElOUhzQcMsisl6WqRCo7kK4DlEw",
-  authDomain: "expense-tracker-gql.firebaseapp.com",
-  projectId: "expense-tracker-gql",
-  storageBucket: "expense-tracker-gql.firebasestorage.app",
-  messagingSenderId: "574310733278",
-  appId: "1:574310733278:web:3737ab2ddf212a62ca394f"
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export default app; 
+export default app;

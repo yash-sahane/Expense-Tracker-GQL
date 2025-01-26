@@ -17,14 +17,22 @@ const server = connectGraphQL();
 await server.start();
 
 app.use(express.json());
-app.use("/graphql", expressMiddleware(server) as any);
-
-app.listen(port, () => {
-  console.log("Server is listening on port", port);
-});
+app.use(
+  "/graphql",
+  expressMiddleware(server, {
+    context: async ({ req }) => {
+      const token = req.headers.authorization || "";
+      return { token };
+    },
+  }) as any
+);
 
 app.use(
   (err: ErrorHandler, req: Request, res: Response, next: NextFunction) => {
     errMiddleware(err, req, res, next);
   }
 );
+
+app.listen(port, () => {
+  console.log("Server is listening on port", port);
+});

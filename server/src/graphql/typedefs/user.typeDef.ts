@@ -14,19 +14,18 @@ const userTypeDef = `#graphql
 
   input LoginInput {
     email : String!
-    password : String!
   }
 
   type Response {
     success : String!
     message : String!
-    data : String
+    data : User
   }
 
   type Query {
     users : [User!]
-    authUser : User
-    user(userId : ID!) : User
+    # authUser : User
+    user(uid : ID!) : User
   }
 
   type Mutation{

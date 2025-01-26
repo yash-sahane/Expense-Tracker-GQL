@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/form";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase";
+import { createUser } from "@/graphql/query";
+import { useMutation } from "@apollo/client";
 
 const loginSchema = z.object({
   email: z.string().min(6, {
@@ -42,6 +44,8 @@ const signupSchema = z.object({
 });
 
 export function Auth() {
+  // const [createUserHandler] = useMutation(createUser);
+
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -61,8 +65,6 @@ export function Auth() {
   });
 
   async function onLoginSubmit(data: z.infer<typeof loginSchema>) {
-    console.log("working");
-
     try {
       const { email, password } = data;
       const result = await createUserWithEmailAndPassword(
@@ -71,14 +73,24 @@ export function Auth() {
         password
       );
       const token = await result.user.getIdToken();
-
-      const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_URI}/graphql/`
-      );
+      const response = await createUserHandler({
+        variables: {
+          data: {
+            email,
+          },
+          context: {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        },
+      });
+      console.log(response.data);
     } catch (e: any) {
       console.log(e.message);
     }
   }
+
   function onSignupSubmit(data: z.infer<typeof signupSchema>) {
     // toast({
     //   title: "You submitted the following values:",
@@ -106,10 +118,7 @@ export function Auth() {
             Login
           </h2> */}
             <Form {...loginForm}>
-              <form
-                className=""
-                onSubmit={loginForm.handleSubmit(onLoginSubmit)}
-              >
+              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)}>
                 <FormField
                   control={loginForm.control}
                   name="email"

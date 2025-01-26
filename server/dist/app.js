@@ -11,10 +11,15 @@ connectDB();
 const server = connectGraphQL();
 await server.start();
 app.use(express.json());
-app.use("/graphql", expressMiddleware(server));
-app.listen(port, () => {
-    console.log("Server is listening on port", port);
-});
+app.use("/graphql", expressMiddleware(server, {
+    context: async ({ req }) => {
+        const token = req.headers.authorization || "";
+        return { token };
+    },
+}));
 app.use((err, req, res, next) => {
     errMiddleware(err, req, res, next);
+});
+app.listen(port, () => {
+    console.log("Server is listening on port", port);
 });
