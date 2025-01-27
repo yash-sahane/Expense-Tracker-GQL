@@ -1,4 +1,4 @@
-import { createUser } from "../../controllers/users.js";
+import { signup } from "../../controllers/users.js";
 const userResolvers = {
     Query: {
     // users: () => {
@@ -11,7 +11,7 @@ const userResolvers = {
     // },
     },
     Mutation: {
-        createUser: createUser,
+        signup: signup,
     },
 };
 export default userResolvers;

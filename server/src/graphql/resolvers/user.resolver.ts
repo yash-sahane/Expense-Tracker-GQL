@@ -1,5 +1,4 @@
-import { createUser } from "../../controllers/users.js";
-import ErrorHandler from "../../middlewares/error.js";
+import { signup } from "../../controllers/users.js";
 
 const userResolvers = {
   Query: {
@@ -14,7 +13,7 @@ const userResolvers = {
   },
 
   Mutation: {
-    createUser: createUser,
+    signup: signup,
   },
 };
 

@@ -24,10 +24,10 @@ const transactionTypeDef = `#graphql
     amount : Int
   }
 
-  type Response{
+  type TransactionResponse{
     success : String!
     message : String!
-    data : String
+    data : Transaction
   }
 
   type Query {
@@ -36,9 +36,9 @@ const transactionTypeDef = `#graphql
   }
 
   type Mutation {
-    createTransaction(data : createTransactionInput): Response
-    updateTransaction(data : updateTransactionInput) : Response
-    deleteTransaction(transactionId : ID!) : Response
+    createTransaction(data : createTransactionInput): TransactionResponse
+    updateTransaction(data : updateTransactionInput) : TransactionResponse
+    deleteTransaction(transactionId : ID!) : TransactionResponse
   }
 `;
 

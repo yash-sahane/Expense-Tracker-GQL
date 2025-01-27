@@ -16,23 +16,21 @@ const userTypeDef = `#graphql
     email : String!
   }
 
-  type Response {
+  type UserResponse {
     success : String!
     message : String!
     data : User
   }
 
   type Query {
-    users : [User!]
     # authUser : User
     user(uid : ID!) : User
   }
 
   type Mutation{
-    createUser(data : SignupInput) : Response
-    signup(data : SignupInput) : Response
-    login(data : LoginInput) : Response
-    logout : Response
+    signup(data : SignupInput) : UserResponse
+    login(data : LoginInput) : UserResponse
+    # logout : UserResponse
   }
 `;
 export default userTypeDef;

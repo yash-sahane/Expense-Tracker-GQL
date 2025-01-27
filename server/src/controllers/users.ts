@@ -1,31 +1,37 @@
 import { NextFunction } from "express";
 import { Response } from "express";
 import { Request } from "express";
-import ErrorHandler from "../middlewares/error.js";
 import admin from "../config/firebase.js";
 import User from "../model/user.model.js";
 
-export const createUser = async (
+export const signup = async (
   parent: any,
-  data: { email: String; fullName: String; avatar: String },
-  req: Request,
+  { data }: { data: { email: string; fullName: string; avatar: string } },
+  context: { req: Request },
   res: Response,
   next: NextFunction
 ) => {
   try {
+    const { req } = context;
     const token = req.headers.authorization;
 
     if (!token) {
-      return next(new ErrorHandler(401, "Token not provided"));
+      return {
+        success: false,
+        message: "Token not provided",
+      };
     }
 
     const decodedToken = await admin
       .auth()
-      .verifyIdToken(token.replace("Bearer", ""));
+      .verifyIdToken(token.replace("Bearer ", ""));
 
     const user = await User.findOne({ email: data.email });
     if (user) {
-      return next(new ErrorHandler(404, "User already exists"));
+      return {
+        success: false,
+        message: "User already exists",
+      };
     }
 
     const newUser = new User({
@@ -36,11 +42,11 @@ export const createUser = async (
     });
     await newUser.save();
 
-    return res.json({
+    return {
       success: true,
       message: "User created successfully",
       data: newUser,
-    });
+    };
   } catch (e: any) {
     console.log(e.message);
   }

@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/form";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebase";
-import { createUser } from "@/graphql/query";
 import { useMutation } from "@apollo/client";
+import { signup } from "@/graphql/query";
 
 const loginSchema = z.object({
   email: z.string().min(6, {
@@ -44,7 +44,7 @@ const signupSchema = z.object({
 });
 
 export function Auth() {
-  // const [createUserHandler] = useMutation(createUser);
+  const [signupHandler] = useMutation(signup);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -64,42 +64,40 @@ export function Auth() {
     },
   });
 
-  async function onLoginSubmit(data: z.infer<typeof loginSchema>) {
+  async function onLoginSubmit(data: z.infer<typeof loginSchema>) {}
+
+  async function onSignupSubmit(data: z.infer<typeof signupSchema>) {
     try {
-      const { email, password } = data;
+      const { email, password, fullName, avatar } = data;
       const result = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
       const token = await result.user.getIdToken();
-      const response = await createUserHandler({
+
+      // Store token in localStorage
+      localStorage.setItem("token", token);
+
+      const response = await signupHandler({
         variables: {
           data: {
             email,
+            fullName,
+            avatar,
           },
-          context: {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        },
+        context: {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
         },
       });
-      console.log(response.data);
+
+      console.log(response);
     } catch (e: any) {
       console.log(e.message);
     }
-  }
-
-  function onSignupSubmit(data: z.infer<typeof signupSchema>) {
-    // toast({
-    //   title: "You submitted the following values:",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // });
   }
 
   return (

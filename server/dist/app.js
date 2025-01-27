@@ -3,23 +3,20 @@ import { config } from "dotenv";
 import connectDB from "./database/db.js";
 import connectGraphQL from "./graphql/index.js";
 import { expressMiddleware } from "@apollo/server/express4";
-import { errMiddleware } from "./middlewares/error.js";
+import cors from "cors";
 const app = express();
 config();
+app.use(cors());
 const port = Number(process.env.PORT);
 connectDB();
 const server = connectGraphQL();
 await server.start();
 app.use(express.json());
-app.use("/graphql", expressMiddleware(server, {
+app.use("/graphql", express.json(), expressMiddleware(server, {
     context: async ({ req }) => {
-        const token = req.headers.authorization || "";
-        return { token };
+        return { req }; // Ensure request object is available
     },
 }));
-app.use((err, req, res, next) => {
-    errMiddleware(err, req, res, next);
-});
 app.listen(port, () => {
     console.log("Server is listening on port", port);
 });
