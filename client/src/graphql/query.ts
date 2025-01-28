@@ -9,7 +9,20 @@ export const signup = gql(`
           uid,
           fullName,
           email,
-          avatar
+        }
+      }
+    }
+  `);
+
+export const login = gql(`
+    mutation login($data : LoginInput!){
+      login(data : $data){
+        success,
+        message,
+        data{
+          uid,
+          fullName,
+          email,
         }
       }
     }

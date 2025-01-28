@@ -3,13 +3,11 @@ const userTypeDef = `#graphql
     uid : ID!
     fullName : String!
     email : String!
-    avatar : String!
   }
 
   input SignupInput {
     fullName : String!
     email : String!
-    avatar : String!
   }
 
   input LoginInput {
@@ -17,7 +15,7 @@ const userTypeDef = `#graphql
   }
 
   type UserResponse {
-    success : String!
+    success : Boolean!
     message : String!
     data : User
   }

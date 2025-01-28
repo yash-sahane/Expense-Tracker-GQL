@@ -14,10 +14,16 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth } from "@/firebase";
 import { useMutation } from "@apollo/client";
-import { signup } from "@/graphql/query";
+import { login, signup } from "@/graphql/query";
+import toast from "react-hot-toast";
+import { handleFirebaseError } from "@/utils";
+import useStore from "@/context/StoreContext";
 
 const loginSchema = z.object({
   email: z.string().min(6, {
@@ -38,13 +44,12 @@ const signupSchema = z.object({
   password: z.string().min(8, {
     message: "Password must be at least 8 characters",
   }),
-  avatar: z.string().min(8, {
-    message: "Profile image is required",
-  }),
 });
 
 export function Auth() {
   const [signupHandler] = useMutation(signup);
+  const [loginHandler] = useMutation(login);
+  const { setUser } = useStore();
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -58,17 +63,54 @@ export function Auth() {
     resolver: zodResolver(signupSchema),
     defaultValues: {
       fullName: "",
-      avatar: "",
       email: "",
       password: "",
     },
   });
 
-  async function onLoginSubmit(data: z.infer<typeof loginSchema>) {}
+  async function onLoginSubmit(data: z.infer<typeof loginSchema>) {
+    try {
+      const { email, password } = data;
+      console.log(email, password);
+
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const token = await result.user.getIdToken();
+      localStorage.setItem("token", token);
+
+      const { data: loginData } = await loginHandler({
+        variables: {
+          data: { email },
+        },
+        context: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      });
+
+      const { success, message, data: responseData } = loginData.login;
+      console.log(success, message, responseData);
+
+      if (success) {
+        setUser(responseData);
+        toast.success(message);
+      } else {
+        toast.error(message);
+      }
+    } catch (e: any) {
+      if (e.code) {
+        console.log(e.code);
+
+        toast.error(handleFirebaseError(e.code));
+      } else {
+        console.log(e.message);
+      }
+    }
+  }
 
   async function onSignupSubmit(data: z.infer<typeof signupSchema>) {
     try {
-      const { email, password, fullName, avatar } = data;
+      const { email, password, fullName } = data;
       const result = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -79,12 +121,11 @@ export function Auth() {
       // Store token in localStorage
       localStorage.setItem("token", token);
 
-      const response = await signupHandler({
+      const { data: signupData } = await signupHandler({
         variables: {
           data: {
             email,
             fullName,
-            avatar,
           },
         },
         context: {
@@ -94,9 +135,20 @@ export function Auth() {
         },
       });
 
-      console.log(response);
+      const { success, message, data: responseData } = signupData.signup;
+      console.log(responseData);
+      if (success) {
+        toast.success(message);
+        setUser(responseData);
+      } else {
+        toast.error(message);
+      }
     } catch (e: any) {
-      console.log(e.message);
+      if (e.code) {
+        toast.error(handleFirebaseError(e.code));
+      } else {
+        console.log(e.message);
+      }
     }
   }
 
@@ -217,24 +269,6 @@ export function Auth() {
                           id="email"
                           placeholder="tylerswift@gmail.com"
                           type="email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                ></FormField>
-                <FormField
-                  control={signupForm.control}
-                  name="avatar"
-                  render={({ field }) => (
-                    <FormItem className="mb-2">
-                      <Label>Profile picture</Label>
-                      <FormControl>
-                        <Input
-                          id="avatar"
-                          type="file"
-                          accept="image/*"
                           {...field}
                         />
                       </FormControl>

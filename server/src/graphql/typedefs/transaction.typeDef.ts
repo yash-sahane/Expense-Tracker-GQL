@@ -25,7 +25,7 @@ const transactionTypeDef = `#graphql
   }
 
   type TransactionResponse{
-    success : String!
+    success : Boolean!
     message : String!
     data : Transaction
   }

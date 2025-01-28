@@ -8,6 +8,9 @@ import {
   createHttpLink,
   InMemoryCache,
 } from "@apollo/client";
+import { Toaster } from "react-hot-toast";
+import { ContextProvider } from "./context/StoreContext.tsx";
+import { BrowserRouter as Router } from "react-router-dom";
 
 const httpLink = createHttpLink({
   uri: "http://localhost:3000/graphql",
@@ -22,9 +25,14 @@ const client = new ApolloClient({
 });
 
 createRoot(document.getElementById("root")!).render(
-  <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
-  </ThemeProvider>
+  <Router>
+    <ContextProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <ApolloProvider client={client}>
+          <App />
+          <Toaster />
+        </ApolloProvider>
+      </ThemeProvider>
+    </ContextProvider>
+  </Router>
 );
