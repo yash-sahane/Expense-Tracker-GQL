@@ -24,6 +24,7 @@ import { login, signup } from "@/graphql/query";
 import toast from "react-hot-toast";
 import { handleFirebaseError } from "@/utils";
 import useStore from "@/context/StoreContext";
+import { useNavigate } from "react-router-dom";
 
 const loginSchema = z.object({
   email: z.string().min(6, {
@@ -50,6 +51,7 @@ export function Auth() {
   const [signupHandler] = useMutation(signup);
   const [loginHandler] = useMutation(login);
   const { setUser } = useStore();
+  const navigate = useNavigate();
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -94,6 +96,7 @@ export function Auth() {
       if (success) {
         setUser(responseData);
         toast.success(message);
+        navigate("/home");
       } else {
         toast.error(message);
       }
@@ -140,6 +143,7 @@ export function Auth() {
       if (success) {
         toast.success(message);
         setUser(responseData);
+        navigate("/home");
       } else {
         toast.error(message);
       }

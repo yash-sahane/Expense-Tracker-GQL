@@ -27,3 +27,16 @@ export const login = gql(`
       }
     }
   `);
+
+export const getUser = gql(`
+    query getUser{
+      getUser{
+        success,
+        data{
+          uid,
+          fullName, 
+          email
+        }
+      }
+    }
+  `);

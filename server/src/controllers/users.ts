@@ -89,3 +89,38 @@ export const login = async (
     console.log(e.message);
   }
 };
+
+export const getUser = async (_: any, __: any, context: { req: Request }) => {
+  try {
+    const { req } = context;
+
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return {
+        success: false,
+        message: "Token not provided",
+      };
+    }
+
+    const decodedToken = await admin
+      .auth()
+      .verifyIdToken(token.replace("Bearer ", ""));
+    const { uid, email } = decodedToken;
+
+    const user = await User.findOne({ uid });
+    if (!user) {
+      return {
+        success: false,
+        message: "User doesn't exists",
+      };
+    }
+
+    return {
+      success: true,
+      data: user,
+    };
+  } catch (e: any) {
+    console.log(e.message);
+  }
+};

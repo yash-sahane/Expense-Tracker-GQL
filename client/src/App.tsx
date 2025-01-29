@@ -3,17 +3,37 @@ import Auth from "./pages/Auth";
 import { Home } from "lucide-react";
 import useStore from "./context/StoreContext";
 import { useEffect } from "react";
+import { useLazyQuery } from "@apollo/client";
+import { getUser } from "./graphql/query";
+import toast from "react-hot-toast";
 
 const App = () => {
-  const { user } = useStore();
+  const { setUser } = useStore();
   const navigate = useNavigate();
+  const [getUserHandler, { data, error }] = useLazyQuery(getUser);
 
   useEffect(() => {
-    if (user) {
-      console.log(user);
-      navigate("/home");
+    const token = localStorage.getItem("token");
+    if (token) {
+      getUserHandler({
+        context: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      });
     }
-  }, [user]);
+  }, []);
+
+  useEffect(() => {
+    if (data) {
+      setUser(data.getUser.data);
+      navigate("/home");
+    } else if (error) {
+      console.log(error);
+      toast.error(error?.message || "Something went wrong");
+    }
+  }, [data, error]);
 
   return (
     <>
