@@ -1,14 +1,7 @@
-import { NextFunction } from "express";
-import { Response } from "express";
-import { Request } from "express";
 import admin from "../config/firebase.js";
 import User from "../model/user.model.js";
 
-export const signup = async (
-  parent: any,
-  { data }: { data: { email: string; fullName: string } },
-  context: { req: Request }
-) => {
+export const signup = async (_, { data }, context) => {
   try {
     const { req } = context;
     const token = req.headers.authorization;
@@ -44,16 +37,12 @@ export const signup = async (
       message: "User created successfully",
       data: newUser,
     };
-  } catch (e: any) {
+  } catch (e) {
     console.log(e.message);
   }
 };
 
-export const login = async (
-  parent: any,
-  args: { data: { email: String } },
-  context: { req: Request }
-) => {
+export const login = async (parent, args, context) => {
   try {
     const { req } = context;
     const token = req.headers.authorization;
@@ -85,12 +74,12 @@ export const login = async (
       message: "User loggedin successfully",
       data: user,
     };
-  } catch (e: any) {
+  } catch (e) {
     console.log(e.message);
   }
 };
 
-export const getUser = async (_: any, __: any, context: { req: Request }) => {
+export const getUser = async (_, __, context) => {
   try {
     const { req } = context;
 
@@ -120,7 +109,7 @@ export const getUser = async (_: any, __: any, context: { req: Request }) => {
       success: true,
       data: user,
     };
-  } catch (e: any) {
+  } catch (e) {
     console.log(e.message);
   }
 };

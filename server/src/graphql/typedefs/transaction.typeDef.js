@@ -1,12 +1,11 @@
 const transactionTypeDef = `#graphql
   type Transaction {
-    _id : ID!
     uid : ID!
     description : String!
     paymentType : String!
     category : String!
     amount : Int!
-    Date : String!
+    date : String!
   }
 
   input createTransactionInput {
@@ -25,8 +24,8 @@ const transactionTypeDef = `#graphql
   }
 
   type TransactionResponse{
-    success : Boolean!
-    message : String!
+    success : Boolean
+    message : String
     data : Transaction
   }
 
