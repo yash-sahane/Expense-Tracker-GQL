@@ -1,8 +1,6 @@
 "use client";
-import React from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -25,6 +23,7 @@ import toast from "react-hot-toast";
 import { handleFirebaseError } from "@/utils";
 import useStore from "@/context/StoreContext";
 import { useNavigate } from "react-router-dom";
+import { BottomGradient } from "@/utils/BottomGradient";
 
 const loginSchema = z.object({
   email: z.string().min(6, {
@@ -96,7 +95,7 @@ export function Auth() {
       if (success) {
         setUser(responseData);
         toast.success(message);
-        navigate("/home");
+        navigate("/");
       } else {
         toast.error(message);
       }
@@ -143,12 +142,14 @@ export function Auth() {
       if (success) {
         toast.success(message);
         setUser(responseData);
-        navigate("/home");
+        navigate("/");
       } else {
         toast.error(message);
       }
     } catch (e: any) {
       if (e.code) {
+        console.log(e.code);
+
         toast.error(handleFirebaseError(e.code));
       } else {
         console.log(e.message);
@@ -328,28 +329,5 @@ export function Auth() {
     </div>
   );
 }
-
-const BottomGradient = () => {
-  return (
-    <>
-      <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-      <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-    </>
-  );
-};
-
-const LabelInputContainer = ({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={cn("flex flex-col space-y-2 w-full", className)}>
-      {children}
-    </div>
-  );
-};
 
 export default Auth;

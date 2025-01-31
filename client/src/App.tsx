@@ -1,39 +1,48 @@
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Auth from "./pages/Auth";
-import { Home } from "lucide-react";
 import useStore from "./context/StoreContext";
 import { useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { getUser } from "./graphql/query";
 import toast from "react-hot-toast";
+import Transaction from "./pages/Transaction";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Home from "./pages/Home";
 
 const App = () => {
-  const { setUser } = useStore();
+  const { user, setUser } = useStore();
   const navigate = useNavigate();
-  const [getUserHandler, { data, error }] = useLazyQuery(getUser);
+  const [getUserHandler] = useLazyQuery(getUser);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      getUserHandler({
-        context: {
-          headers: {
-            Authorization: `Bearer ${token}`,
+    const getUser = async () => {
+      try {
+        const { data: responseData } = await getUserHandler({
+          context: {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        },
-      });
-    }
-  }, []);
+        });
 
-  useEffect(() => {
-    if (data) {
-      setUser(data.getUser.data);
-      navigate("/home");
-    } else if (error) {
-      console.log(error);
-      toast.error(error?.message || "Something went wrong");
+        const { success, message, data: userData } = responseData?.getUser;
+        if (success) {
+          setUser(userData);
+          navigate("/");
+        } else {
+          toast.error(message || "Something went wrong");
+        }
+      } catch (e: any) {
+        console.log(e);
+        toast.error(e.message);
+      }
+    };
+
+    const token = localStorage.getItem("token");
+    if (token && !user) {
+      getUser();
     }
-  }, [data, error]);
+  }, [user]);
 
   return (
     <>
@@ -42,8 +51,15 @@ const App = () => {
         <div className="absolute pointer-events-none inset-0 flex items-center justify-center dark:bg-black bg-white  hover:bg-dot-black [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
       </div>
       <Routes>
-        <Route path="/" element={<Auth />}></Route>
-        <Route path="/home" element={<Home />}></Route>
+        <Route path="/auth" element={<Auth />}></Route>
+        <Route
+          path="/hi"
+          element={<ProtectedRoute element={<Home />} />}
+        ></Route>
+        <Route
+          path="/"
+          element={<ProtectedRoute element={<Transaction />} />}
+        ></Route>
       </Routes>
     </>
   );
